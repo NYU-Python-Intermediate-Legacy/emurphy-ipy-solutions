@@ -1,0 +1,78 @@
+import os
+import sys
+
+
+sendmail_prog = '/usr/sbin/sendmail'
+
+required_args = set(['to', 'from'])
+valid_args = set(['to', 'from', 'subject', 'body'])
+
+args = sys.argv[1:]
+print type(args)
+
+arg_dict = {}
+
+try:
+   for arg in args:
+      key,val = arg.split('=')
+      key = key.lower()
+      val = val.lower()
+      arg_dict[key] = val
+except ValueError:
+   print 'Please make sure you use \'=\' between argument and its value.'
+   exit()
+   
+
+   
+supplied_args = set(arg_dict.keys())
+
+
+# test for required fields
+
+diff_list = list(required_args.difference(supplied_args))
+
+if len(diff_list) == 2:
+   print '\nYou must supply a value for \'%s\' and \'%s\' to be able to send an email.' % (diff_list[0], diff_list[1])
+   exit()
+elif len(diff_list) ==1:
+   print '\nYou must supply a value for \'%s\' to be able to send an email.' % diff_list[0]
+else:
+   invld_fld = list(supplied_args.difference(valid_args))
+ 
+   if len(invld_fld) ==1:
+      print 'Invalid fields: %s' % (invld_fld[0])
+      exit()
+   elif len(invld_fld) >=1: 
+      print 'Invalid fields: %s' % (", ".join(invld_fld)) 
+      exit()
+   else:
+      req_args_lst = list(required_args)
+      sup_args_lst = list(supplied_args)
+      print '\nYou have supplied the required fields: %s\n' % (" & ".join(req_args_lst))
+            
+      if "subject" not in arg_dict:
+         arg_dict["subject"] = ''
+      if "body" not in arg_dict:
+         arg_dict["body"] = ''
+
+
+template = """To: {0}
+From: {1}
+Subject: {2}"""
+      
+header = template.format(arg_dict["to"], arg_dict["from"],arg_dict["subject"])
+print header
+
+msg = header + "\n" + arg_dict["body"]
+sendmail = os.popen(sendmail_prog + " -t", "w")
+sendmail.write(msg)
+sendmail.close()
+    
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
