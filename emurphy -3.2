@@ -1,0 +1,45 @@
+import sys
+
+top_cnt = int(sys.argv[1])
+
+fh = open("bitly.tsv")
+fh.readline()
+
+country_dict = {}
+platform_list = ['android', 'blackberry', 'windows', 'ipad', 'iphone'
+                 'ipod', 'linux', 'macintosh', 'playstation']
+
+
+for line in fh:
+   split_line = line.rstrip().split("\t")
+   
+   for platform in platform_list:  
+      if platform in split_line[1].lower():
+         user_platform = platform
+         break
+      else:
+         user_platform = 'not available' 
+   
+   country = split_line[6].upper().strip()
+
+   if country:
+      if country in country_dict:
+         if user_platform in country_dict[country]:
+            country_dict[country][user_platform] += 1
+         else:
+            country_dict[country][user_platform] = 1
+      else:
+         country_dict[country] = {}
+         country_dict[country][user_platform] = 1
+         
+
+for key in sorted(country_dict):
+   print '%s:' % (key)
+   
+   ed = sorted(country_dict[key], key=lambda keyz: country_dict[key][keyz], reverse=True)
+   
+   for plat in ed[:top_cnt]:
+      print '     %s : %s ' % (plat,country_dict[key][plat])
+         
+
+      	
