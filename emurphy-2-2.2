@@ -1,0 +1,19 @@
+fh = open("bitly.tsv")
+fh.readline()
+
+city_dict = {}
+
+for line in fh:
+   split_line = line.rstrip().split("\t")
+   if len(split_line) > 4:
+      if split_line[4].isalpha() and len(split_line[4]) > 1:
+         if split_line[4] in city_dict:
+            city_dict[split_line[4]] = city_dict[split_line[4]] + 1
+         else:
+            city_dict[split_line[4]] = 1
+
+
+topcountry = sorted(city_dict, key=city_dict.get, reverse=True)[:9]
+
+for country in topcountry:
+   print '%s : %s' %(country, city_dict[country])
