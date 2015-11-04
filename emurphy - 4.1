@@ -1,0 +1,89 @@
+import os, sys, time
+
+class Logger(object):
+
+   base_dir = '~/Desktop/int_python/'
+   
+   stats = {'DEBUG':1, 'INFO':2, 'WARNING':3, 'ERROR':4, 'CRITICAL':5}
+   
+
+   def __init__(self, filename, priority='DEBUG', datetime=True, scriptname=True):       
+       
+       self.priority = priority.upper()
+       self.status = self.stats[self.priority]
+       
+       try:
+         fh = open(filename,'a') 
+       except IOError:
+          return None
+       self.handle = fh
+       self.name = filename
+       self.scriptname = os.path.basename(sys.argv[0])
+       
+       if datetime:
+          self.datelog = True
+       else:
+          self.datelog = False
+        
+       if scriptname:
+           self.script = True
+       else:
+           self.script = False
+    
+   def get_filename(self):
+       return self.name
+    
+   def close(self):
+       self.handle.close()
+    
+   def write_log(self,msg):
+       
+       pre_dt = False
+       pre_scrip = False
+       
+       if self.datelog:
+          pre_str = time.ctime() + " "
+          if self.script:
+             pre_str = pre_str + " " + self.scriptname + " "
+       elif self.script:   
+          pre_str = self.scriptname + " "     
+       
+       try:
+          full_msg = pre_str + msg + '\n'
+       except UnboundLocalError:
+          full_msg = msg + '\n'
+       self.handle.write(full_msg)
+   
+   def get_status(self):
+       return self.priority
+   
+   def debug(self,msg):
+      if self.status <= 1:
+          self.write_log(msg)
+   
+   def info(self,msg):
+      if self.status <= 2:
+          self.write_log(msg)
+   
+   def warning(self,msg):       
+      if self.status <= 3:
+          self.write_log(msg)
+   
+   def error(self, msg):
+      if self.status <= 4:
+         self.write_log(msg)
+   
+   def critical(self,msg):
+      if self.status <= 5:
+         self.write_log(msg)
+   
+          
+       
+a = Logger('Ed_Test.txt', 'debug', datetime=True, scriptname=True)
+
+a.warning('warning')
+a.critical('critical')
+a.debug('debug')
+a.info('info')
+a.error('error')
+a.close()
