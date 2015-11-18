@@ -1,0 +1,44 @@
+class PersistDict(dict):
+
+   def __init__(self, filename):
+      self.filename = filename
+            
+      with open(self.filename) as fh:
+         for line in fh:
+            key, val = line.split(":")
+            dict.__setitem__(self, key, val)
+    
+   def __setitem__(self, key, value):
+      dict.__setitem__(self, key, value)      
+      self.write_dict()
+         
+   def __delitem__(self, key):
+      dict.__delitem__(self, key)
+      self.write_dict()
+    
+   def clear(self):
+      dict.clear(self)
+      self.write_dict()
+   
+   def update(self,udict):
+      dict.update(self,udict)
+      self.write_dict()
+
+   def setdefault(self, key, value):
+      dict.setdefault(self, key, value)
+      self.write_dict()
+               	
+   def write_dict(self):
+      with open(self.filename,"w") as fh:
+         for key in dict.keys(self):
+            fh.write(key + ":" + dict.__getitem__(self,key) + "\n")	 
+           
+     
+     
+     
+x = PersistDict('dict.txt')
+x['Car'] = 'Black'
+x['Book'] = 'green'
+x['Hair'] = 'yellow'
+x['Shirt'] = 'magenta'
+x['Fruit'] = 'orange'
